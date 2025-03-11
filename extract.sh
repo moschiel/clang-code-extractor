@@ -42,8 +42,10 @@ case "$EXTRACT_TYPE" in
         ;;
 esac
 
+
 # Se um quarto argumento for fornecido, use-o como extra-args
 EXTRA_ARGS=""
+RETURN_LINES=false
 if [ "$#" -ge 4 ]; then
     #EXTRA_ARGS=$4
     #EXTRA_ARGS="-extra-arg=$4"
@@ -52,6 +54,11 @@ if [ "$#" -ge 4 ]; then
     IFS=' ' read -ra ARGS <<< "$4"
     # Itera sobre cada elemento do array e imprime
     for arg in "${ARGS[@]}"; do
+        if [ $arg == "lines" ]; then
+            #Se for lines, eh pra retornar apenas as linhas em que esta localizado
+            RETURN_LINES=true
+            continue
+        fi
         #echo "Argumento: $arg"
         EXTRA_ARGS+="-extra-arg=$arg "
     done
@@ -61,13 +68,38 @@ fi
 #echo "./build/extractor "$SOURCE_FILE" -"$EXTRACT_TYPE"="$NAME" "$EXTRA_ARGS""
 EXTRACTOR_OUTPUT=$(./build/extractor "$SOURCE_FILE" -"$EXTRACT_TYPE"="$NAME" $EXTRA_ARGS 2>&1)
 
-# Verifica se o elemento foi encontrado
-if echo "$EXTRACTOR_OUTPUT" | grep -q -E "^($GREP_TYPE): $NAME"; then
-    # Extrai o código do elemento após "Definition:"
-    EXTRACTED_BODY=$(echo "$EXTRACTOR_OUTPUT" | awk '/Definition:/,0' | sed '1d')
+# Encontra a linha onde está o padrão "<TYPE>: <NAME>"
+line_number=$(echo "$EXTRACTOR_OUTPUT" | grep -n -E "^($GREP_TYPE): $NAME" | cut -d: -f1)
 
-    # Exibe a definição extraída
-    echo "$EXTRACTED_BODY"
+# Capturar as duas linhas abaixo do padrão
+start_line_raw=$(echo "$EXTRACTOR_OUTPUT" | sed -n "$((line_number+1))p")
+end_line_raw=$(echo "$EXTRACTOR_OUTPUT" | sed -n "$((line_number+2))p")
+
+# Verifica se o elemento foi encontrado
+if [[ -n "$line_number" ]]; then
+
+    if $RETURN_LINES && [[ "$start_line_raw" =~ ^Start\ Line: ]] && [[ "$end_line_raw" =~ ^End\ Line: ]]; then
+        # Capturar os numeros das linhas
+        start_line=$(echo "$start_line_raw" | awk -F': ' '{print $2}')
+        end_line=$(echo "$end_line_raw" | awk -F': ' '{print $2}')
+
+        # Verificar se Start Line é maior que End Line
+        if (( start_line > end_line )); then
+            echo "Erro: '$NAME' Start Line ($start_line) é maior que End Line ($end_line)."
+            exit 1
+        fi
+
+        # Concatenar os valores no formato "<um valor>;<outro valor>"
+        EXTRACTED_LINES="${start_line};${end_line}"
+        
+        echo "$EXTRACTED_LINES"
+    else
+        # Extrai o código do elemento após "Definition:"
+        EXTRACTED_BODY=$(echo "$EXTRACTOR_OUTPUT" | awk '/Definition:/,0' | sed '1d')
+
+        # Exibe a definição extraída
+        echo "$EXTRACTED_BODY"
+    fi
 else
     echo "Error: '$NAME' not found in '$SOURCE_FILE'."
     exit 1
