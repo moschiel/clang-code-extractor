@@ -243,8 +243,13 @@ public:
     void run(const MatchFinder::MatchResult &Result) override {
         if (const FunctionDecl *FD = Result.Nodes.getNodeAs<FunctionDecl>("externFuncDecl")) {
             // Funções possuem ligação externa por padrão, mas podemos checar se realmente tem external linkage
+            #if defined(__clang__) && __clang_major__ >= 15
+            if (FD->getLinkageInternal() != Linkage::External)
+                return;
+            #else
             if (FD->getLinkageInternal() != ExternalLinkage)
                 return;
+            #endif
 
             SourceManager &SM = *Result.SourceManager;
             SourceLocation StartLoc = FD->getBeginLoc();
