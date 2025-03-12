@@ -1,1 +1,0 @@
-#defineRCC_CIR_BYTE2_ADDRESS         ((uint32_t)(RCC_BASE + 0x0C + 0x02))

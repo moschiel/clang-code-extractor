@@ -52,11 +52,15 @@ if [ "$#" -ge 4 ]; then
     shift 3  # Remove os três primeiros argumentos ($1, $2 e $3), mantendo apenas os extras
 
     for arg in "$@"; do  # Agora "$@" contém apenas os argumentos extras
-        if [ "$arg" == "lines" ]; then
+        # Remove qualquer \r ou \n
+        filtered_arg=$(echo "$arg" | tr -d '\r\n')
+        
+        if [ "$filtered_arg" == "lines" ]; then
             RETURN_LINES=true
             continue
         fi
-        EXTRA_ARGS+=("-extra-arg=$arg")  # Adiciona corretamente ao array
+
+        EXTRA_ARGS+=("-extra-arg=$filtered_arg")  # Adiciona corretamente ao array
     done
 fi
 
