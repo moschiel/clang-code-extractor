@@ -18,10 +18,28 @@
 #include "clang/Lex/PPCallbacks.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <fstream>  // Para salvar arquivo
+
+
 using namespace clang;
 using namespace clang::ast_matchers;
 using namespace clang::tooling;
 using namespace llvm;
+
+// Função para salvar os dados extraídos nos arquivos
+void saveToFile(const std::string &definition, unsigned startLine, unsigned endLine) {
+    std::ofstream defFile("definition.txt", std::ios::trunc);
+    std::ofstream lineFile("lines.txt", std::ios::trunc);
+    
+    if (defFile.is_open() && lineFile.is_open()) {
+        defFile << definition;
+        lineFile << startLine << ";" << endLine;
+        
+        defFile.close();
+        lineFile.close();
+    }
+}
+
 
 // Opções para CLI
 static cl::OptionCategory ToolCategory("extractor options");
@@ -79,14 +97,17 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = Lexer::getSourceText(
+                CharSourceRange::getTokenRange(Func->getSourceRange()), SM, LangOptions()).str() + "\n";
 
             llvm::outs() << "Function: " 
                          << Func->getNameInfo().getName().getAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                         << Lexer::getSourceText(CharSourceRange::getTokenRange(Func->getSourceRange()), SM, LangOptions())
-                         << "\n";
+                         << Definition;
+
+            saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -102,15 +123,17 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = Lexer::getSourceText(
+                CharSourceRange::getTokenRange(Func->getSourceRange()), SM, LangOptions()).str() + ";\n";
 
             llvm::outs() << "Prototype: " 
                             << Func->getNameInfo().getName().getAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                            << Lexer::getSourceText(CharSourceRange::getTokenRange(Func->getSourceRange()), SM, LangOptions())
-                            << ";"
-                            << "\n";
+                            << Definition;
+
+                            saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -126,14 +149,15 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(TD->getSourceRange()), SM, LangOptions())) + ";\n";
 
             llvm::outs() << "Typedef: " << TD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                         << Lexer::getSourceText(CharSourceRange::getTokenRange(TD->getSourceRange()), SM, LangOptions())
-                         << ";"
-                         << "\n";
+                         << Definition;
+
+                         saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -151,14 +175,16 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, LangOptions())) + ";\n";
+            
 
             llvm::outs() << "Struct: " << RD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                         << Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, LangOptions())
-                         << ";"
-                         << "\n";
+                         << Definition;
+
+                         saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -174,14 +200,15 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(ED->getSourceRange()), SM, LangOptions())) + ";\n";
 
             llvm::outs() << "Enum: " << ED->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                         << Lexer::getSourceText(CharSourceRange::getTokenRange(ED->getSourceRange()), SM, LangOptions())
-                         << ";"
-                         << "\n";
+                         << Definition;
+
+                         saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -198,14 +225,15 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, LangOptions())) + ";\n";
 
             llvm::outs() << "Union: " << RD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                         << Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, LangOptions())
-                         << ";"
-                         << "\n";
+                         << Definition;
+
+                         saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -225,14 +253,15 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, LangOptions())) + ";\n";
 
             llvm::outs() << "Global Variable: " << VD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                            << Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, LangOptions())
-                            << ";"
-                            << "\n";
+                            << Definition;
+
+                            saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -257,15 +286,16 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(FD->getSourceRange()), SM, LangOptions())) + ";\n";
 
             llvm::outs() << "Extern Function: " 
                             << FD->getNameInfo().getName().getAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                            << Lexer::getSourceText(CharSourceRange::getTokenRange(FD->getSourceRange()), SM, LangOptions())
-                            << ";"
-                            << "\n";
+                            << Definition;
+
+                            saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -285,14 +315,15 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, LangOptions())) + ";\n";
 
             llvm::outs() << "Extern Variable: " << VD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
             llvm::outs() << "End Line: " << EndLine << "\n";
             llvm::outs() << "Definition:\n"
-                            << Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, LangOptions())
-                            << ";"
-                            << "\n";
+                            << Definition;
+
+                            saveToFile(Definition, StartLine, EndLine);
         }
     }
 };
@@ -326,17 +357,23 @@ public:
 
         unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
         unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
+        std::string Definition = "";
 
         CharSourceRange Range = CharSourceRange::getCharRange(StartLoc, EndLoc);
         StringRef MacroText = Lexer::getSourceText(Range, SM, LangOptions());
+
+        if(MacroText.empty())
+            Definition = "#define " + DefinedMacro + "\n";
+        else
+            Definition = std::string("#define") + MacroText.str() + "\n";
+
         llvm::outs() << "Macro: " << DefinedMacro << "\n";
         llvm::outs() << "Start Line: " << StartLine << "\n";
         llvm::outs() << "End Line: " << EndLine << "\n";
-        llvm::outs() << "Definition:\n";
-        if(MacroText.empty())
-            llvm::outs() << "#define " << DefinedMacro << "\n";
-        else
-            llvm::outs() << "#define " << MacroText << "\n";
+        llvm::outs() << "Definition:\n"
+                            << Definition;
+
+                            saveToFile(Definition, StartLine, EndLine);
     }
 
 private:

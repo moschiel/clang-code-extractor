@@ -2,6 +2,7 @@
 #  Created on: 21 de jan de 2025
 #      Author: roger.moschiel
 
+EXTRACT_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 SEARCH_TYPES="function, prototype, typedef, struct, union, enum, macro, global, extern-variable, extern-function"
 
@@ -44,29 +45,23 @@ esac
 
 
 # Se um quarto argumento for fornecido, use-o como extra-args
-EXTRA_ARGS=""
+EXTRA_ARGS=()
 RETURN_LINES=false
+
 if [ "$#" -ge 4 ]; then
-    #EXTRA_ARGS=$4
-    #EXTRA_ARGS="-extra-arg=$4"
-    #echo "EXTRA_ARGS=$4"
-    # Usa o IFS para separar em um array
-    IFS=' ' read -ra ARGS <<< "$4"
-    # Itera sobre cada elemento do array e imprime
-    for arg in "${ARGS[@]}"; do
-        if [ $arg == "lines" ]; then
-            #Se for lines, eh pra retornar apenas as linhas em que esta localizado
+    shift 3  # Remove os três primeiros argumentos ($1, $2 e $3), mantendo apenas os extras
+
+    for arg in "$@"; do  # Agora "$@" contém apenas os argumentos extras
+        if [ "$arg" == "lines" ]; then
             RETURN_LINES=true
             continue
         fi
-        #echo "Argumento: $arg"
-        EXTRA_ARGS+="-extra-arg=$arg "
+        EXTRA_ARGS+=("-extra-arg=$arg")  # Adiciona corretamente ao array
     done
 fi
 
 # Executa o extractor e armazena a saída
-#echo "./build/extractor "$SOURCE_FILE" -"$EXTRACT_TYPE"="$NAME" "$EXTRA_ARGS""
-EXTRACTOR_OUTPUT=$(./build/extractor "$SOURCE_FILE" -"$EXTRACT_TYPE"="$NAME" $EXTRA_ARGS 2>&1)
+EXTRACTOR_OUTPUT=$($EXTRACT_SCRIPT_DIR/build/extractor "$SOURCE_FILE" -"$EXTRACT_TYPE"="$NAME" "${EXTRA_ARGS[@]}" 2>&1)
 
 # Encontra a linha onde está o padrão "<TYPE>: <NAME>"
 line_number=$(echo "$EXTRACTOR_OUTPUT" | grep -n -E "^($GREP_TYPE): $NAME" | cut -d: -f1)
