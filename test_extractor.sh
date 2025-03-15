@@ -20,7 +20,7 @@ echo "DEFINITIONS"
 ./extract.sh global debugClient file_sample.h
 ./extract.sh prototype xTaskCreate file_sample.h -DconfigSUPPORT_DYNAMIC_ALLOCATION=1 -DPRIVILEGED_FUNCTION=
 ./extract.sh global deviceID file_sample.h
-./extract.sh function MCU_SetupHardware file_sample.h
+./extract.sh function SetupHardware file_sample.h
 echo "LINES"
 ./extract.sh macro SIMPLE_MACRO file_sample.h lines
 ./extract.sh macro LOGCRAZY file_sample.h lines
@@ -38,7 +38,4 @@ echo "LINES"
 ./extract.sh global debugClient file_sample.h lines
 ./extract.sh prototype xTaskCreate file_sample.h lines -DconfigSUPPORT_DYNAMIC_ALLOCATION=1 -DPRIVILEGED_FUNCTION=
 ./extract.sh global deviceID file_sample.h lines
-./extract.sh function MCU_SetupHardware file_sample.h lines
-
-./extract.sh function HAL_RTC_Init ../mock_tree/STM32Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rtc.c lines -DHAL_RTC_MODULE_ENABLED
-./extract.sh function HAL_RTC_Init /home/moschiel/Development/EmulandoMSC/MSC_Simulator/mock_tree/STM32Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rtc.c lines -DHAL_RTC_MODULE_ENABLED
+./extract.sh function SetupHardware file_sample.h lines

@@ -58,15 +58,13 @@ UartClient debugClient;
 
 extern STRUCT_READONLY_HW deviceID;
 
-void MCU_SetupHardware( void )
+void SetupHardware( void )
 {
 #ifdef __RELEASE__
 #ifndef __TRACE__
-	SCB->VTOR = (FLASH_BASE | 0x10000);
+	ABCD
 #endif
-	DWT->CTRL |= (1 << 0); /* Enable cycle counter register */
+	DEFG;
 #endif
-	SystemClock_Config();
 	HAL_Init();
-	CPU_CACHE_Enable();
 }
