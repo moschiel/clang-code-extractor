@@ -38,6 +38,8 @@ void saveToFile(const std::string &definition, unsigned startLine, unsigned endL
         defFile.close();
         lineFile.close();
     }
+
+    std::exit(0);
 }
 
 
