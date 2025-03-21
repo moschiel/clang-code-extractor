@@ -4,6 +4,8 @@ import sys
 import subprocess
 import re
 
+ENCONDING="latin-1"
+
 def is_error_line(line):
     """Retorna True se a linha aparentar ser uma mensagem de erro."""
     trimmed = line.strip()
@@ -106,7 +108,7 @@ def main():
     command = [extractor_executable, source_file, f"-{extract_type}={name}"] + extra_args
 
     try:
-        result = subprocess.run(command, capture_output=True, text=True)
+        result = subprocess.run(command, capture_output=True, text=True, encoding=ENCONDING)
     except Exception as e:
         print(f"Error executing extractor: {e}")
         sys.exit(1)
