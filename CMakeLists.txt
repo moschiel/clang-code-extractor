@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 project(SourceExtractor)
 
+if(WIN32)
+  message(STATUS "Configuring for Windows")
+  include(${CMAKE_CURRENT_SOURCE_DIR}/windows-config.cmake)
+else()
+  message(STATUS "Configuring for Linux")
+  # No Linux, o CMake usará os caminhos padrão ou aqueles definidos no sistema
+endif()
+
 # Procura pelo LLVM e Clang (usando os pacotes CONFIG)
 find_package(LLVM REQUIRED CONFIG)
 find_package(Clang REQUIRED CONFIG)
