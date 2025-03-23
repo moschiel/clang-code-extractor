@@ -3,13 +3,15 @@ import os
 import sys
 import subprocess
 import platform
+import shutil
 
 def main():
     build_dir = 'build'
     # Se desejar um build limpo, descomente a linha abaixo:
     # if os.path.isdir(build_dir): os.system("rm -rf " + build_dir)
-    if not os.path.isdir(build_dir):
-        os.mkdir(build_dir)
+    if os.path.exists(build_dir):
+        shutil.rmtree(build_dir)
+    os.mkdir(build_dir)
     os.chdir(build_dir)
     system = platform.system()
 
