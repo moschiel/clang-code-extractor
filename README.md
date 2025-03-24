@@ -4,7 +4,7 @@ Este projeto utiliza LLVM/Clang para extrair definições de código C/C++ (por 
 
 ---
 
-## 1. Linux
+## 1. Linux (Ubuntu)
 
 ### Dependências
 
