@@ -17,10 +17,19 @@ def main():
 
     env = os.environ.copy()
     if system == "Windows":
+         # Tenta encontrar Cmake no PATH
+        cmake_path = shutil.which("cmake")
+        if not cmake_path:
+            # No windows, tem que passar o diretorio completo do Cmake, adiciona ao PATH nao funciona nao sei porque
+            cmake_path = "C:\\Program Files\\CMake\\bin\\cmake.exe" 
+            # Verifica se o cmake existe
+            if not os.path.exists(cmake_path):
+                raise FileNotFoundError("CMake não encontrado!")
+
         generator = "MinGW Makefiles"
         print("Using generator:", generator)
         cmake_cmd = [
-            "cmake",
+            cmake_path,
             "-G", generator,
             "..",
             #"-DCMAKE_BUILD_TYPE=Release",
@@ -30,11 +39,12 @@ def main():
         ]
         ret = subprocess.run(cmake_cmd, env=env)
     else:
-        ret = subprocess.run(["cmake", ".."], env=env)
+        cmake_path = "cmake" # No ubuntu, funciona de qualquer diretorio
+        ret = subprocess.run([cmake_path, ".."], env=env)
     if ret.returncode != 0:
         sys.exit(ret.returncode)
     
-    ret = subprocess.run(["cmake", "--build", "."], env=env)
+    ret = subprocess.run([cmake_path, "--build", "."], env=env)
     sys.exit(ret.returncode)
 
 if __name__ == '__main__':
