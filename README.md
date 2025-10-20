@@ -72,9 +72,18 @@ sudo apt install build-essential clang llvm clang-tools-extra cmake libxml2-dev
    - **mingw-w64-x86_64-llvm:** LLVM e arquivos de configuração (por exemplo, `LLVMConfig.cmake`).
    - **mingw-w64-x86_64-make:** Fornece o `mingw32-make.exe`.
 
-4. **Verifique o PATH:**
 
-   Certifique-se de que o diretório `C:\msys64\mingw64\bin` esteja no PATH do sistema, para que os executáveis (como `clang.exe`, `gcc.exe`, etc.) possam ser encontrados.
+4. **Instale o CMake:**  
+   Baixe e instale o [CMake](https://cmake.org/download/#latest).
+
+5. **Verifique o PATH para MINGW64 e Cmake:**
+
+   Certifique-se de que o diretório do MINGW64(`C:\msys64\mingw64\bin`) e do CMake(`C:\Program Files\CMake\bin`) estão no PATH do sistema.
+
+   Então execute o comando pra verificar se funciona.
+   ```bash 
+   cmake --version
+   ```
 
 ### Build
 
