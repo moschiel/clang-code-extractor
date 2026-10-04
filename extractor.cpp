@@ -104,7 +104,7 @@ public:
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
             std::string Definition = Lexer::getSourceText(
-                CharSourceRange::getTokenRange(Func->getSourceRange()), SM, LangOptions()).str() + "\n";
+                CharSourceRange::getTokenRange(Func->getSourceRange()), SM, Result.Context->getLangOpts()).str() + "\n";
 
             llvm::outs() << "Function: " 
                          << Func->getNameInfo().getName().getAsString() << "\n";
@@ -130,7 +130,7 @@ public:
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
             std::string Definition = Lexer::getSourceText(
-                CharSourceRange::getTokenRange(Func->getSourceRange()), SM, LangOptions()).str() + ";\n";
+                CharSourceRange::getTokenRange(Func->getSourceRange()), SM, Result.Context->getLangOpts()).str() + ";\n";
 
             llvm::outs() << "Prototype: " 
                             << Func->getNameInfo().getName().getAsString() << "\n";
@@ -155,7 +155,7 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
-            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(TD->getSourceRange()), SM, LangOptions())) + ";\n";
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(TD->getSourceRange()), SM, Result.Context->getLangOpts())) + ";\n";
 
             llvm::outs() << "Typedef: " << TD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
@@ -181,7 +181,7 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
-            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, LangOptions())) + ";\n";
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, Result.Context->getLangOpts())) + ";\n";
             
 
             llvm::outs() << "Struct: " << RD->getNameAsString() << "\n";
@@ -206,7 +206,7 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
-            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(ED->getSourceRange()), SM, LangOptions())) + ";\n";
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(ED->getSourceRange()), SM, Result.Context->getLangOpts())) + ";\n";
 
             llvm::outs() << "Enum: " << ED->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
@@ -231,7 +231,7 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
-            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, LangOptions())) + ";\n";
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(RD->getSourceRange()), SM, Result.Context->getLangOpts())) + ";\n";
 
             llvm::outs() << "Union: " << RD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
@@ -259,7 +259,7 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
-            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, LangOptions())) + ";\n";
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, Result.Context->getLangOpts())) + ";\n";
 
             llvm::outs() << "Global Variable: " << VD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";
@@ -288,7 +288,7 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
-            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(FD->getSourceRange()), SM, LangOptions())) + ";\n";
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(FD->getSourceRange()), SM, Result.Context->getLangOpts())) + ";\n";
 
             llvm::outs() << "Extern Function: " 
                             << FD->getNameInfo().getName().getAsString() << "\n";
@@ -317,7 +317,7 @@ public:
 
             unsigned StartLine = SM.getSpellingLineNumber(StartLoc);
             unsigned EndLine = SM.getSpellingLineNumber(EndLoc);
-            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, LangOptions())) + ";\n";
+            std::string Definition = std::string(Lexer::getSourceText(CharSourceRange::getTokenRange(VD->getSourceRange()), SM, Result.Context->getLangOpts())) + ";\n";
 
             llvm::outs() << "Extern Variable: " << VD->getNameAsString() << "\n";
             llvm::outs() << "Start Line: " << StartLine << "\n";

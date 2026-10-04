@@ -115,3 +115,6 @@ sudo apt install build-essential clang llvm clang-tools-extra cmake libxml2-dev
 ---
 
 
+
+C++: .cpp sources and qualified method names (for example device::Serial::read) are supported by Clang. Pass -xc++ for C++ headers. Run python test_cpp.py after building. Extraction uses the translation unit language options. Overloads retain first-match behavior; use unambiguous targets. 
+
