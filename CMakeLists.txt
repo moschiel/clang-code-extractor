@@ -16,7 +16,11 @@ find_package(Clang REQUIRED CONFIG)
 # Inclui os diretórios de include do LLVM e Clang
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${CLANG_INCLUDE_DIRS})
-add_definitions(${LLVM_DEFINITIONS})
+# LLVM packages can export these flags as a space-delimited command string.
+# Split explicitly so CMake does not quote all flags as one macro value.
+string(REPLACE ";" " " LLVM_DEFINITIONS_COMMAND "${LLVM_DEFINITIONS}")
+separate_arguments(LLVM_DEFINITION_FLAGS NATIVE_COMMAND "${LLVM_DEFINITIONS_COMMAND}")
+add_definitions(${LLVM_DEFINITION_FLAGS})
 
 # Lista dos arquivos fonte (no nosso caso, extractor.cpp)
 set(SOURCE_FILES extractor.cpp)
