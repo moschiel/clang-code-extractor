@@ -113,10 +113,17 @@ def main():
     resources = os.path.join(extract_script_dir, "resources")
     if os.path.isdir(resources):
         command.append(f"-extra-arg=-resource-dir={resources}")
+    child_env = os.environ.copy()
+    if os.name == 'posix' and os.path.isdir(resources):
+        # Some bundled libraries have their own RUNPATH. Make the complete
+        # packaged dependency closure available to this child process only.
+        binary_dir = os.path.join(extract_script_dir, 'build')
+        previous = child_env.get('LD_LIBRARY_PATH', '')
+        child_env['LD_LIBRARY_PATH'] = binary_dir + (os.pathsep + previous if previous else '')
 
     try:
         with tempfile.TemporaryDirectory(prefix="mockshadow-extract-") as scratch:
-            result = subprocess.run(command, cwd=scratch, capture_output=True,
+            result = subprocess.run(command, cwd=scratch, env=child_env, capture_output=True,
                                     text=True, encoding=ENCONDING)
     except Exception as e:
         print(f"Error executing extractor: {e}")
@@ -131,6 +138,7 @@ def main():
         s_line, e_line = extract_line_numbers(all_lines)
         if s_line is None or e_line is None:
             print("Error: Start Line or End Line information not found.")
+            print(extractor_output, file=sys.stderr)
             sys.exit(1)
         if s_line > e_line:
             print(f"Erro: '{name}' Start Line ({s_line}) é maior que End Line ({e_line}).")
