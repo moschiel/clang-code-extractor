@@ -22,7 +22,7 @@
 #include "clang/Lex/PPCallbacks.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include <fstream>  // Para salvar arquivo
+#include <cstdlib>
 
 
 using namespace clang;
@@ -30,22 +30,12 @@ using namespace clang::ast_matchers;
 using namespace clang::tooling;
 using namespace llvm;
 
-// Função para salvar os dados extraídos nos arquivos
-void saveToFile(const std::string &definition, unsigned startLine, unsigned endLine) {
-    std::ofstream defFile("definition.txt", std::ios::trunc);
-    std::ofstream lineFile("lines.txt", std::ios::trunc);
-    
-    if (defFile.is_open() && lineFile.is_open()) {
-        defFile << definition;
-        lineFile << startLine << ";" << endLine;
-        
-        defFile.close();
-        lineFile.close();
-    }
-
+// Results are emitted on stdout only. Never write into the installation or
+// share scratch files between independent consumer processes.
+void finishExtraction() {
+    llvm::outs().flush();
     std::exit(0);
 }
-
 
 // Opções para CLI
 static cl::OptionCategory ToolCategory("extractor options");
@@ -113,7 +103,7 @@ public:
             llvm::outs() << "Definition:\n"
                          << Definition;
 
-            saveToFile(Definition, StartLine, EndLine);
+            finishExtraction();
         }
     }
 };
@@ -139,7 +129,7 @@ public:
             llvm::outs() << "Definition:\n"
                             << Definition;
 
-                            saveToFile(Definition, StartLine, EndLine);
+                            finishExtraction();
         }
     }
 };
@@ -163,7 +153,7 @@ public:
             llvm::outs() << "Definition:\n"
                          << Definition;
 
-                         saveToFile(Definition, StartLine, EndLine);
+                         finishExtraction();
         }
     }
 };
@@ -190,7 +180,7 @@ public:
             llvm::outs() << "Definition:\n"
                          << Definition;
 
-                         saveToFile(Definition, StartLine, EndLine);
+                         finishExtraction();
         }
     }
 };
@@ -214,7 +204,7 @@ public:
             llvm::outs() << "Definition:\n"
                          << Definition;
 
-                         saveToFile(Definition, StartLine, EndLine);
+                         finishExtraction();
         }
     }
 };
@@ -239,7 +229,7 @@ public:
             llvm::outs() << "Definition:\n"
                          << Definition;
 
-                         saveToFile(Definition, StartLine, EndLine);
+                         finishExtraction();
         }
     }
 };
@@ -267,7 +257,7 @@ public:
             llvm::outs() << "Definition:\n"
                             << Definition;
 
-                            saveToFile(Definition, StartLine, EndLine);
+                            finishExtraction();
         }
     }
 };
@@ -297,7 +287,7 @@ public:
             llvm::outs() << "Definition:\n"
                             << Definition;
 
-                            saveToFile(Definition, StartLine, EndLine);
+                            finishExtraction();
         }
     }
 };
@@ -325,7 +315,7 @@ public:
             llvm::outs() << "Definition:\n"
                             << Definition;
 
-                            saveToFile(Definition, StartLine, EndLine);
+                            finishExtraction();
         }
     }
 };
@@ -375,7 +365,7 @@ public:
         llvm::outs() << "Definition:\n"
                             << Definition;
 
-                            saveToFile(Definition, StartLine, EndLine);
+                            finishExtraction();
     }
 
 private:

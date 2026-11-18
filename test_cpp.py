@@ -5,11 +5,24 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 
 ROOT = Path(__file__).resolve().parent
 
 
 class CppExtractionTests(unittest.TestCase):
+    def test_concurrent_calls_do_not_write_into_caller(self):
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            source = directory / 'input.c'
+            source.write_text('int sample(void) { return 5; }\n')
+            def extract(index):
+                return subprocess.check_output([sys.executable, str(ROOT / 'extract.py'),
+                    'function', 'sample', 'input.c', 'lines'], cwd=directory, text=True).strip()
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                self.assertEqual(list(pool.map(extract, range(8))), ['1;1'] * 8)
+            self.assertEqual({p.name for p in directory.iterdir()}, {'input.c'})
+
     def test_cpp_methods_namespaces_and_c_compatibility(self):
         cases = [
             ('unit.cpp', 'namespace device {\nclass Serial { public: int read(); };\nint Serial::read() { return 7; }\n}\n',

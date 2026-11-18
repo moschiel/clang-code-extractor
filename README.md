@@ -118,3 +118,10 @@ sudo apt install build-essential clang llvm clang-tools-extra cmake libxml2-dev
 
 C++: .cpp sources and qualified method names (for example device::Serial::read) are supported by Clang. Pass -xc++ for C++ headers. Run python test_cpp.py after building. Extraction uses the translation unit language options. Overloads retain first-match behavior; use unambiguous targets. 
 
+
+## Portable runtime integration
+
+Results are emitted to stdout only. The extractor no longer writes definition.txt
+or lines.txt. extract.py isolates each invocation, preserves the caller's include
+working directory, and uses resources/include when packaged. CMake Windows paths
+can be overridden explicitly with -D options for another MSYS2 prefix.

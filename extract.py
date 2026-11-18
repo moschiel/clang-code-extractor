@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 import re
+import tempfile
 
 ENCONDING="latin-1"
 
@@ -67,7 +68,7 @@ def main():
     # Parâmetros
     extract_type = sys.argv[1]  # Tipo a extrair (function, typedef, etc.)
     name = sys.argv[2]          # Nome da entidade
-    source_file = sys.argv[3]   # Arquivo fonte
+    source_file = os.path.abspath(sys.argv[3])   # Arquivo fonte
 
     if not os.path.isfile(source_file):
         print(f"Error: Source file '{source_file}' not found.")
@@ -106,9 +107,17 @@ def main():
     # Monta o comando para chamar o executável "extractor"
     extractor_executable = os.path.join(extract_script_dir, "build", "extractor")
     command = [extractor_executable, source_file, f"-{extract_type}={name}"] + extra_args
+    # Preserve relative include semantics while keeping legacy scratch outputs
+    # out of the installation. Each invocation owns an independent directory.
+    command.append(f"-extra-arg=-working-directory={os.getcwd()}")
+    resources = os.path.join(extract_script_dir, "resources")
+    if os.path.isdir(resources):
+        command.append(f"-extra-arg=-resource-dir={resources}")
 
     try:
-        result = subprocess.run(command, capture_output=True, text=True, encoding=ENCONDING)
+        with tempfile.TemporaryDirectory(prefix="mockshadow-extract-") as scratch:
+            result = subprocess.run(command, cwd=scratch, capture_output=True,
+                                    text=True, encoding=ENCONDING)
     except Exception as e:
         print(f"Error executing extractor: {e}")
         sys.exit(1)
